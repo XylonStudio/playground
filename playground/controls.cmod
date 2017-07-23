@@ -1,0 +1,239 @@
+﻿//  
+//  controls.cmod
+//  playground
+// 
+//  Created by Donald Pakkies (Donaldpakkies@gmail.com) on 14/07/17.
+//  Copyright (c) 2017 Donald Pakkies. All rights reserved.
+//  
+
+(func() {
+    
+    using library.seshaUI;
+    
+    var language = {
+        cmodulus : "ace/mode/swift"
+    };
+    
+    func Output(name) {
+        this.Name       = name;
+        this.Parent;
+        let _output = document.createElement("textarea");
+        _output.id  = name;
+        _output.setAttribute("readonly", "true");
+        _output.setAttribute("warp", "on");
+        this.parent = func(id) {
+            this.Parent = id;
+        }
+        this.style = func(style) {
+            _output.style = style;
+        }
+        this.class = func(name) {
+            _output.classList.add(name);
+        }
+        this.add = func() {
+            let p = document.getElementById(this.Parent);
+            p.appendChild(_output);
+            window._output = _output;
+        }
+        this.clear = func() {
+            return document.getElementById(this.Name).value = "";
+        }
+        this.setText = func(text) {
+            return document.getElementById(this.Name).value = text;
+        }
+        this.getText = func() {
+            return document.getElementById(this.Name).value;
+        }
+        return this;
+    }
+    
+    func Input(name) {
+        this.Name       = name;
+        this.Parent;
+        let _input = document.createElement("pre");
+        _input.id  = name;
+        this.parent = func(id) {
+            this.Parent = id;
+        }
+        this.style = func(style) {
+            _input.style = style;
+        }
+        this.class = func(name) {
+            _input.classList.add(name);
+        }
+        this.add = func() {
+            let p = document.getElementById(this.Parent);
+            p.appendChild(_input);
+            window._input = _input;
+        }
+        return this;
+    }
+    
+    func StatusBar(name) {
+        this.Name       = name;
+        this.Parent;
+        let _statusbar = document.createElement("div");
+        _statusbar.id  = name;
+        this.parent = func(id) {
+            this.Parent = id;
+        }
+        this.style = func(style) {
+            _statusbar.style = style;
+        }
+        this.class = func(name) {
+            _statusbar.classList.add(name);
+        }
+        this.add = func() {
+            let p = document.getElementById(this.Parent);
+            p.appendChild(_statusbar);
+            window._statusbar = _statusbar;
+        }
+        return this;
+    }
+    
+    func Label(name) {
+        this.Name       = name;
+        this.Parent;
+        let _label = document.createElement("label");
+        _label.id  = name;
+        this.parent = func(id) {
+            this.Parent = id;
+        }
+        this.style = func(style) {
+            _label.style = style;
+        }
+        this.class = func(name) {
+            _label.classList.add(name);
+        }
+        this.add = func() {
+            let p = document.getElementById(this.Parent);
+            p.appendChild(_label);
+            window._label = _label;
+        }
+        this.setText = func(text) {
+            return document.getElementById(this.Name).textContent = text;
+        }
+        this.getText = func() {
+            return document.getElementById(this.Name).textContent;
+        }
+        return this;
+    }
+    
+    //Create Input Control
+    let iEditor = new Input("editor");
+    iEditor.parent("container");
+    iEditor.style("top: 1px; right: 400px; bottom: 20px; left: 0; margin: 0 0 0 0; position: absolute;");
+    iEditor.add();
+    
+    //Create Output Control
+    let iConsole = new Output("iConsole");
+    iConsole.parent("container");
+    iConsole.style("border-left: 1px solid #ccc; top: 1px; right: 0; width: 399px; padding: 0 0 0 0; background: #eee; color: #000; position: absolute;");
+    iConsole.class("output");
+    iConsole.add();
+    
+    let iStatus = new StatusBar("iStatus");
+    iStatus.parent("container");
+    iStatus.style("right: 0; bottom: 0; left: 0; margin: 0 0 0 0; background: #007ACD; height: 20px; position: absolute;");
+    iStatus.add();
+    
+    let iLabel = new Label("iLabel");
+    iLabel.parent("iStatus");
+    iLabel.style("top: 3px; right: 5px; color: #fff; margin: 0 0 0 0; position: absolute; font-size: 11px;");
+    iLabel.add();
+    
+    ace.require("ace/ext/language_tools");
+    var editor = ace.edit("editor");
+    editor.renderer.setShowPrintMargin(false);
+    editor.renderer.setDisplayIndentGuides(false);
+    editor.session.setMode(language.cmodulus);
+    editor.setTheme("ace/theme/textmate");
+    editor.on("changeStatus", statusUpdate);
+    editor.on("changeSelection", statusUpdate);
+    editor.on("keyboardActivity", statusUpdate);
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
+    editor.commands.addCommand({
+        name: "new",
+        bindKey: {win: "Ctrl+N", mac: "Command-Option-N"},
+        exec: func (editor) {
+            mnuFileNew_click();
+        },
+        readOnly: true
+    });
+    editor.commands.addCommand({
+        name: "saveFile",
+        bindKey: {win: "Ctrl+S"},
+        exec: func (editor) {
+            mnuFileSave_click();
+        },
+        readOnly: true
+    });
+    editor.commands.addCommand({
+        name: "saveFileAs",
+        bindKey: {win: "Ctrl+Shift+S"},
+        exec: func (editor) {
+            mnuFileSaveAs_click();
+        },
+        readOnly: true
+    });
+    editor.commands.addCommand({
+        name: "openFile",
+        bindKey: {win: "Ctrl+O"},
+        exec: func (editor) {
+            mnuFileOpen_click();
+        },
+        readOnly: true
+    });
+    editor.commands.addCommand({
+        name: "gotoline",
+        bindKey: {win: "Ctrl+L", mac: "Command-Option-L"},
+        exec: func (editor) {
+            mnuFindGoTo_click();
+        },
+        readOnly: true
+    });
+    editor.commands.addCommand({
+        name: "run",
+        bindKey: {win: "F5"},
+        exec: func (editor) {
+            mnuRunStart_click();
+        },
+        readOnly: true
+    });
+    
+    func statusUpdate() {
+        var status = [];
+        function add(str, separator) {
+            str && status.push(str, separator || "|");
+        }
+
+        add(editor.keyBinding.getStatusText(editor));
+        if (editor.commands.recording)
+            add("REC");
+        
+        var sel = editor.selection;
+        var c = sel.lead;
+        
+        if (!sel.isEmpty()) {
+            var r = editor.getSelectionRange();
+            add("(" + (Number(r.end.row - r.start.row) + 1) + ":"  + (r.end.column - r.start.column) + ")", " ");
+        }
+        
+        add(Number(c.row) + 1 + ":" + c.column, " ");        
+        if (sel.rangeCount)
+            add("[" + sel.rangeCount + "]", " ");
+        status.pop();
+        iLabel.setText(status.join(""));
+    }
+    
+    //editor.setTheme("ace/theme/gruvbox");
+    //monokai
+    
+    window.iConsole = iConsole;
+    window.editor   = editor;
+    
+})();

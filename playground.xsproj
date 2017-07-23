@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Properties>
+    <AppName>playground</AppName>
+    <AppVersion>1.0.0.0</AppVersion>
+    <AppType>C Modulus Windows Application</AppType>
+    <ConfigBuild>Debug</ConfigBuild>
+    <ConfigCPU>x86</ConfigCPU>
+    <ConfigFramework>.NET Framework 4.5</ConfigFramework>
+    <ConfigEngine>Subatomic</ConfigEngine>
+    <EnvironmentName>Xylon Studio</EnvironmentName>
+    <EnvironmentVersion>0.2.15.2</EnvironmentVersion>
+    <String>xylon.cmodulus.playground</String>
+    <Output>\bin\x86\Debug</Output>
+</Properties>

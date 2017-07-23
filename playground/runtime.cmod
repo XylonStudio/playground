@@ -1,0 +1,39 @@
+﻿//  
+//  runtime.cmod
+//  playground
+// 
+//  Created by Donald Pakkies (Donaldpakkies@gmail.com) on 15/07/17.
+//  Copyright (c) 2017 Donald Pakkies. All rights reserved.
+//  
+
+(func() {
+    
+    using library.seshaUI;
+    
+    var cmodulus = {
+        compile : func(appcode) {
+            var appcmod = File.Read(specialdirectory.applicationdata + "/Xylon Studio/Playground/Runtime/runtime/app.cmod");
+            if appcode.includes("func main(") {
+                File.WriteLines(specialdirectory.applicationdata + "/Xylon Studio/Playground/Runtime/bin/x86/Debug/app/app.cmod", appcode.ReplaceAll("'", "&20#"));
+                playground = false;
+            }
+            else {
+                File.WriteLines(specialdirectory.applicationdata + "/Xylon Studio/Playground/Runtime/bin/x86/Debug/app/app.cmod", appcmod.Include(appcode.ReplaceAll("'", "&20#")));
+                playground = true;
+            }
+            CurrentFile.Save();
+            //newProcess.start(specialdirectory.programfilesX86 + '/Xylon Studio/IDE/buildpoint.exe', specialdirectory.mydocuments + "/Xylon Studio/Projects/runtime/bin/x86/Debug/app/app.cmod");
+            newProcess.start(specialdirectory.currentdirectory + "/buildpoint.exe", specialdirectory.applicationdata + "/Xylon Studio/Playground/Runtime/bin/x86/Debug/app/app.cmod");
+        }
+    };
+    
+    var runtime = {
+        start : func() {
+            newProcess.start(specialdirectory.applicationdata + "/Xylon Studio/Playground/Runtime/bin/x86/Debug/runtime.exe", '');
+        }
+    };
+    
+    window.cmodulus = cmodulus;
+    window.runtime  = runtime;
+    
+})();

@@ -1,0 +1,60 @@
+/* Style Sheet */
+    
+body {
+font-family: sans-serif;
+-webkit-user-select: none;
+margin: 0;
+border-bottom: 1px solid #ccc;
+}
+
+#container {
+height: 100%;
+width: 100%;
+overflow: auto;
+}
+
+.editor { 
+margin: 0;
+position: absolute;
+top: 1;
+bottom: 20px;
+left: 0;
+right: 0;
+display: none;
+}
+
+.output {
+height: calc(100% - 21px);
+border: 0;
+font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+background: #222;
+color: #fff;
+resize: none;
+}
+
+.output:focus {
+outline: none;
+}
+
+::-webkit-scrollbar {
+width: 12px;
+background: #fff;
+}
+
+::-webkit-scrollbar-track {
+background: #fff;
+}
+
+::-webkit-scrollbar-track-piece {
+background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+right: 3px;
+position: absolute;
+border: 1px solid #ccc;
+-webkit-border-radius: 10px;
+border-radius: 10px;
+background: #cecece;
+box-shadow: 4px 5px 10px #cecece;
+}

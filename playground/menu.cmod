@@ -1,0 +1,252 @@
+﻿//  
+//  menu.cmod
+//  playground
+// 
+//  Created by Donald Pakkies (Donaldpakkies@gmail.com) on 15/07/17.
+//  Copyright (c) 2017 Donald Pakkies. All rights reserved.
+//  
+
+(func() {
+    
+    using library.seshaUI;
+    
+    Menu.setApplicationMenu = func () {`
+        <root>
+            <TopLevelMenu Name="mnuFile" Text="&amp;File">
+                <MenuItem Name="mnuFileNew" Text="N&amp;ew..." ShortcutKeys="Control+N"/>
+                <MenuItem Name="mnuFileOpen" Text="O&amp;pen... " ShortcutKeys="Control+O"/>
+                <MenuItem Name="mnuFileSave" Text="S&amp;ave" ShortcutKeys="Control+S"/>
+                <MenuItem Name="mnuFileSaveAs" Text="S&amp;ave As..."/>
+                <MenuItem Text="-" />
+                <MenuItem Name="mnuFileExit" Text="E&amp;xit" ShortcutKeys="Alt+F4"/>
+            </TopLevelMenu>
+
+            <TopLevelMenu Name="mnuEdit" Text="&amp;Edit" >
+            <MenuItem Name="mnuEditUndo" Text="U&amp;ndo" ShortcutKeys="Control+Z"/>
+                <MenuItem Name="mnuEditRedo" Text="R&amp;edo" ShortcutKeys="Control+Y"/>
+                <MenuItem Text="-" />
+                <MenuItem Name="mnuEditCut" Text="C&amp;ut" ShortcutKeys="Control+X"/>
+                <MenuItem Name="mnuEditCopy" Text="C&amp;opy" ShortcutKeys="Control+C" />
+                <MenuItem Name="mnuEditPaste" Text="P&amp;aste" ShortcutKeys="Control+V"/>
+                <MenuItem Name="mnuEditDelete" Text="D&amp;elete" />
+                <MenuItem Text="-" />
+                <MenuItem Name="mnuEditSelectAll" Text="S&amp;elect All" ShortcutKeys="Control+A"/>
+                <MenuItem Name="mnuEditTimeDate" Text="Time/Date"/>
+            </TopLevelMenu>
+            
+            <TopLevelMenu Name="mnuFind" Text="&amp;Find" >
+                <MenuItem Name="mnuFindFind" Text="Find" ShortcutKeys="Control+F" />
+                <MenuItem Name="mnuFindReplace" Text="Replace" ShortcutKeys="Control+H" />
+                <MenuItem Text="-" />
+                <MenuItem Name="mnuFindGoTo" Text="Go To" ShortcutKeys="Control+L"/>
+            </TopLevelMenu>
+            
+            <TopLevelMenu Name="mnuRun" Text="&amp;Run" >
+            <MenuItem Name="mnuRunStart" Text="Start" ShortcutKeys="F5"/>
+            </TopLevelMenu>
+            
+            <TopLevelMenu Name="mnuAbout" Text="&amp;Help" >
+                <MenuItem Name="mnuAboutAbout" Text="A&amp;bout"/>
+            </TopLevelMenu>
+        </root>
+    `}.Code();
+    
+    mainMenu.setXylonStudioMenuStyle();
+    Menu.BackgroundFromHTML = "#fff";
+    
+    var CurrentFile = {
+        Path: "",
+        Save: func() {
+            if Path != "" {
+                var lines = editor.getSession().getDocument().getAllLines();
+                string text = "";
+                for var i = 0; i < lines.length; i++ {
+                    if text != "" {
+                        text += "\n";
+                    }
+                    text += lines[i];
+                }
+                File.WriteLines(CurrentFile.Path, text);
+            }
+        }
+    };
+    
+    func mnuFileNew_click() {
+        CurrentFile.Path = "";
+        editor.getSession().setValue("");
+    }
+    
+    func mnuFileSave_click() {
+        var lines = editor.getSession().getDocument().getAllLines();
+        string text = "";
+        for var i = 0; i < lines.length; i++ {
+            if text != "" {
+                text += "\n";
+            }
+            text += lines[i];
+        }
+        
+        if CurrentFile.Path != "" && Path.Exists(CurrentFile.Path.ReplaceAll(Path.GetName(CurrentFile.Path)).ReplaceAll(",", "")) {
+            File.WriteLines(CurrentFile.Path, text);
+        }
+        else {
+            SaveDialog saveFile = new SaveDialog();
+            saveFile.Filter     = "Playground (*.cmodplay)|*.cmodplay|C Modulus (*.cmod)|*.cmod";
+            saveFile.Title      = "Save Playground";
+            if saveFile.Show() == DialogResults.OK {
+                CurrentFile.Path = saveFile.Path;
+                File.WriteLines(CurrentFile.Path, text);
+            }
+        }
+    }
+    
+    func mnuFileSaveAs_click() {
+        var lines = editor.getSession().getDocument().getAllLines();
+        string text = "";
+        for var i = 0; i < lines.length; i++ {
+            if text != "" {
+                text += "\n";
+            }
+            text += lines[i];
+        }
+        SaveDialog saveFile = new SaveDialog();
+        saveFile.Filter     = "Playground (*.cmodplay)|*.cmodplay|C Modulus (*.cmod)|*.cmod";
+        saveFile.Title      = "Save Playground";
+        if saveFile.Show() == DialogResults.OK {
+            CurrentFile.Path = saveFile.Path;
+            File.WriteLines(CurrentFile.Path, text);
+        }
+    }
+    
+    func mnuFileOpen_click() {
+        OpenDialog openFile = new OpenDialog();
+        openFile.Filter     = "Playground (*.cmodplay)|*.cmodplay|C Modulus (*.cmod)|*.cmod";
+        openFile.Title      = "Open a Playground";
+        if openFile.Show() == DialogResults.OK {
+            CurrentFile.Path = openFile.Path;
+            editor.getSession().setValue(File.Read(openFile.Path));
+        }
+    }
+    
+    func mnuFileExit_click() {
+        application_onExit();
+    }
+    
+    func mnuEditUndo_click() {
+        editor.undo();
+    }
+
+    func mnuEditRedo_click() {
+        clipboard.redo();
+    }
+
+    func mnuEditCut_click() {
+        clipboard.cut();
+    }
+
+    func mnuEditCopy_click() {
+        clipboard.copy();
+    }
+
+    func mnuEditPaste_click() {
+        clipboard.paste();
+    }
+
+    func mnuEditDelete_click() {
+        clipboard.delete();
+    }
+
+    func mnuEditSelectAll_click() {
+        editor.selectAll();
+    }
+    
+    func mnuEditTimeDate_click() {
+        if (editor.session.getTextRange(editor.getSelectionRange()) == "")
+        {
+            editor.insert(datetime.date);
+        }
+        else 
+        {
+            editor.session.replace(editor.selection.getRange(), datetime.date);
+        }
+    }
+    
+    func mnuFindFind_click() {
+        editor.execCommand("find");
+    }
+    
+    func mnuFindReplace_click() {
+        editor.execCommand("replace");
+    }
+    
+    func mnuFindGoTo_click() {
+        var r = editor.getSelectionRange();
+        
+        inputDialog.show("Enter Line Number", string.Format("{0}", r.start.row + 1), "OK");
+        inputDialog.catchresults();
+         
+        if inputDialog.inputdata != "" {
+            try {
+                editor.gotoLine(parseInt(inputDialog.inputdata));
+            }
+            catch exception {}
+        }
+    }
+    
+    //Global Variable
+    string appcode;
+    
+    func mnuRunStart_click() {
+        var lines   = editor.getSession().getDocument().getAllLines();
+        string text = "";
+        for var i = 0; i < lines.length; i++ {
+            if text != "" {
+                text += "\n    ";
+            }
+            text += lines[i].ReplaceAll("?L>", i + 1);
+        }
+        appcode = text.ReplaceAll("'", "&20#");
+        cmodulus.compile(appcode);
+        
+        iConsole.clear();
+        runtime.start();
+    }
+    
+    func mnuAboutAbout_click() {
+        MessageBox.Show(string.Include("{playgroundname}\n \nVersion {version}\nBuildpoint {buildpointversion}\nLicense {license}"), string.Include("{playgroundname}"), MessageButtons.OK, MessageIcon.Information);
+    }
+
+    //File
+    window.mnuFileNew_click    = mnuFileNew_click;
+    window.mnuFileSave_click   = mnuFileSave_click;
+    window.mnuFileSaveAs_click = mnuFileSaveAs_click;
+    window.mnuFileOpen_click   = mnuFileOpen_click;
+    window.mnuFileExit_click   = mnuFileExit_click;
+    
+    //Edit
+    window.mnuEditUndo_click      = mnuEditUndo_click;
+    window.mnuEditRedo_click      = mnuEditRedo_click;
+    window.mnuEditCut_click       = mnuEditCut_click;
+    window.mnuEditCopy_click      = mnuEditCopy_click;
+    window.mnuEditPaste_click     = mnuEditPaste_click;
+    window.mnuEditDelete_click    = mnuEditDelete_click;
+    window.mnuEditSelectAll_click = mnuEditSelectAll_click;
+    window.mnuEditTimeDate_click  = mnuEditTimeDate_click;
+    
+    //Find
+    window.mnuFindFind_click    = mnuFindFind_click;
+    window.mnuFindReplace_click = mnuFindReplace_click;
+    window.mnuFindGoTo_click    = mnuFindGoTo_click;
+    
+    //Project
+    window.mnuRunStart_click = mnuRunStart_click;
+    
+    //About
+    window.mnuAboutAbout_click = mnuAboutAbout_click;
+    
+    //Other
+    window.CurrentFile = CurrentFile;
+    //window.appcode             = appcode;
+    
+})();
+

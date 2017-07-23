@@ -1,0 +1,115 @@
+//  
+//  app.cmod
+//  playground
+// 
+//  Created by Donald Pakkies (Donaldpakkies@gmail.com) on 14/07/17.
+//  Copyright (c) 2017 Donald Pakkies. All rights reserved.
+//  
+
+using library.seshaUI;
+seshaUI app = new seshaUI();
+
+app.require("controls.cmod");
+app.require("runtime.cmod");
+app.require("menu.cmod");
+
+bool playground          = true;
+string playgroundname    = "C Modulus Playground                                    ";
+string version           = "1.0";
+string license           = "MIT";
+string buildpointversion = "1.1.0.0";
+
+func main(args) {
+    app.title       = "Playground";
+    app.icon        = "playground.ico";
+    app.height      = 500;
+    app.width       = 1000;
+    app.windowstate = WindowState.Maximized;
+    if File.Exists(specialdirectory.applicationdata + "/Xylon Studio/Playground/Runtime/bin/x86/Debug/runtime.exe") {
+        app.run();
+    }
+    else {
+        MessageBox.Show("C Modulus Playground Runtime is not installed.", app.title, MessageButtons.OK, MessageIcon.Error);
+        app.destroy();
+    }
+}
+
+func application_onReady() {
+    #region Playground Folder
+    let _PlaygroundDir = new Directory(specialdirectory.applicationdata + "/Xylon Studio/Playground");
+    if _PlaygroundDir.Exists() == true {
+        rememberCode("remember");
+    }
+    else {
+        _PlaygroundDir.Create();
+    }
+    #endregion
+    app.onExit = "application_onExit();"
+}
+
+func application_onExit() {
+    rememberCode("save");
+    app.destroy();
+}
+
+func rememberCode(mode) {
+    let tempFile = String(specialdirectory.applicationdata + "/Xylon Studio/Playground/temp.cmod");
+    let tempPath = String(specialdirectory.applicationdata + "/Xylon Studio/Playground/path");
+    if mode == "save" {
+        var lines = editor.getSession().getDocument().getAllLines();
+        string text = "";
+        for var i = 0; i < lines.length; i++ {
+            if text != "" {
+                text += "\n";
+            }
+            text += lines[i];
+        }
+        File.WriteLines(tempFile, text);
+        File.Write(tempPath, CurrentFile.Path);
+    }
+    else if mode == "remember" && File.Exists(tempFile) == true {
+        if File.Exists(tempPath) {
+            CurrentFile.Path = File.Read(tempPath);
+        }
+        editor.getSession().setValue(File.Read(tempFile));
+    }
+}
+
+//Error on line -26. application_onReady is not defined
+
+func process_data(data) {
+    if iConsole.getText() == "" {
+        if !data == "" {
+            var text = iConsole.getText();
+            text += data;
+            try {
+                if playground == false {
+                    var results = text.match(/Error on line (.*?)\./g).map(func (val) {
+                        text = text.ReplaceAll(val, string.Format("Error on line {0}.", Number(val.replace("Error on line ", "").replace(".", "")) + 26));
+                    });
+                }
+            }
+            catch exception {}
+            iConsole.setText(text.ReplaceAll("&20#", "'").ReplaceAll("Error on line", "Output on line"));
+        }
+    }
+    else {
+        if !data == "" {
+            var text = iConsole.getText();
+            text += "\n" + data;
+            try {
+                if playground == false {
+                    var results = text.match(/Error on line (.*?)\./g).map(func (val) {
+                        text = text.ReplaceAll(val, string.Format("Error on line {0}.", Number(val.replace("Error on line ", "").replace(".", "")) + 26));
+                    });
+                }
+            }
+            catch exception {}
+            iConsole.setText(text.ReplaceAll("&20#", "'").ReplaceAll("Error on line", "Output on line"));
+        }
+    }
+}
+
+func process_onExit() {
+    //
+}
